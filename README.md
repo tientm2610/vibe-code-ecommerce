@@ -1,18 +1,3 @@
-# 🤖 AI Agent Project — PRO Structure
-
-<div align="center">
-  <img src="https://res.cloudinary.com/ecommerce2021/image/upload/v1768626951/dev_efjbzw.jpg" alt="Code Web Không Khó" width="120" style="border-radius: 50%"/>
-
-  <h3>Cấu trúc dự án AI Agent chuẩn PRO</h3>
-  <p>Tổng hợp Clean Code · System Design · Naming Conventions · Monitoring · Team Agents</p>
-
-  [![Facebook](https://img.shields.io/badge/Facebook-Code%20Web%20Không%20Khó-1877F2?logo=facebook)](https://www.facebook.com/codewebkhongkho)
-  [![TikTok](https://img.shields.io/badge/TikTok-@code.web.khng.kh-000000?logo=tiktok)](https://www.tiktok.com/@code.web.khng.kh)
-  [![Website](https://img.shields.io/badge/Website-codewebkhongkho.com-FF6B35?logo=google-chrome)](https://codewebkhongkho.com/portfolios)
-</div>
-
----
-
 ## 🗂️ Full Project Structure
 
 ```
@@ -184,25 +169,3 @@ npm run test:e2e
 > - API keys, secrets, passwords
 
 ---
-
-## 👨‍💻 Tác giả
-
-<div align="center">
-  <img src="https://res.cloudinary.com/ecommerce2021/image/upload/v1768626951/dev_efjbzw.jpg" alt="Code Web Không Khó" width="80" style="border-radius: 50%"/>
-
-  **Code Web Không Khó**
-
-  > *Học lập trình web không còn khó nữa 🚀*
-
-  | Platform | Link |
-  |----------|------|
-  | 📘 Facebook | [facebook.com/codewebkhongkho](https://www.facebook.com/codewebkhongkho) |
-  | 🎵 TikTok | [@code.web.khng.kh](https://www.tiktok.com/@code.web.khng.kh) |
-  | 🌐 Website | [codewebkhongkho.com/portfolios](https://codewebkhongkho.com/portfolios) |
-</div>
-
----
-
-<div align="center">
-  <sub>Made with ❤️ by <a href="https://www.facebook.com/codewebkhongkho">Code Web Không Khó</a></sub>
-</div>
