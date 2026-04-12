@@ -12,6 +12,8 @@
 
 # Dependencies
 node_modules/
+.claude/
+docs/
 
 # Build output
 dist/
