@@ -44,7 +44,7 @@ export class CartService {
     if (!product) {
       throw new AppError('Product not found', 404, 'PRODUCT_NOT_FOUND');
     }
-    if (!product.is_active) {
+    if (!product.isActive) {
       throw new AppError('Product is not available', 400, 'PRODUCT_NOT_AVAILABLE');
     }
     if (product.stock < dto.quantity) {
@@ -122,11 +122,11 @@ export class CartService {
   private formatCartResponse(cart: any): CartResponse {
     const items: CartItemResponse[] = (cart.items || []).map((item: any) => ({
       id: item.id,
-      productId: item.product_id,
+      productId: item.productId,
       productName: item.product.name,
       productSku: item.product.sku,
       productPrice: Number(item.product.price),
-      productImageUrl: item.product.image_url,
+      productImageUrl: item.product.imageUrl,
       quantity: item.quantity,
       subtotal: Number(item.product.price) * item.quantity
     }));

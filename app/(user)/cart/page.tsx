@@ -7,7 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Trash2, Minus, Plus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cartApi, Cart, CartItem } from '@/lib/api/cart';
+import { cartService, Cart, CartItem } from '@/lib/services/cart.service';
 import { useAuthStore } from '@/lib/auth-store';
 
 function CartItemCard({ item, onUpdateQuantity, onRemove }: { item: CartItem; onUpdateQuantity: (qty: number) => void; onRemove: () => void }) {

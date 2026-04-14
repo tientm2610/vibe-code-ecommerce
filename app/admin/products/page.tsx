@@ -2,8 +2,10 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
-import { productApi, Product, ProductFilters } from '@/lib/api/product';
-import { productCardApi } from '@/lib/api/admin';
+import { productService, Product, ProductFilters } from '@/lib/services/product.service';
+import { categoryService, Category } from '@/lib/services/category.service';
+import { productCardApi } from '@/lib/services/product.service';
+import { categoryApi } from '@/lib/services/category.service';
 import { ProductGrid } from '@/components/product-grid';
 import { ProductSkeleton } from '@/components/product-skeleton';
 import { Button } from '@/components/ui/button';

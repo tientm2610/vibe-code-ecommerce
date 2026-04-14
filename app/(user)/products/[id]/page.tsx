@@ -7,7 +7,8 @@ import Image from 'next/image';
 import { ShoppingCart, Minus, Plus, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { productApi } from '@/lib/api/product';
+import { productService } from '@/lib/services/product.service';
+import { motion } from 'framer-motion';
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -17,7 +18,7 @@ export default function ProductDetailPage() {
 
   const { data, isLoading, error } = useQuery({
     queryKey: ['product', productId],
-    queryFn: () => productApi.getProduct(productId),
+    queryFn: () => productService.getProduct(productId),
     enabled: !!productId,
   });
 
@@ -61,21 +62,36 @@ export default function ProductDetailPage() {
   }).format(product.price);
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="container mx-auto px-4 py-8"
+    >
       <nav className="text-sm text-muted-foreground mb-6">
         <span>Home</span> / <span>Products</span> / <span className="text-foreground">{product.name}</span>
       </nav>
 
       <div className="grid md:grid-cols-2 gap-8">
-        <div className="relative aspect-square rounded-lg overflow-hidden bg-slate-100">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.1 }}
+          className="relative aspect-square rounded-xl overflow-hidden bg-muted"
+        >
           {product.imageUrl ? (
             <Image src={product.imageUrl} alt={product.name} fill className="object-cover" priority />
           ) : (
             <div className="flex items-center justify-center h-full text-muted-foreground">No Image</div>
           )}
-        </div>
+        </motion.div>
 
-        <div className="space-y-6">
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.2 }}
+          className="space-y-6"
+        >
           <div>
             <p className="text-sm text-muted-foreground">{product.categoryName}</p>
             <h1 className="text-3xl font-bold mt-1">{product.name}</h1>
@@ -98,22 +114,26 @@ export default function ProductDetailPage() {
           <div className="space-y-2">
             <label className="text-sm font-medium">Quantity</label>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
-                <Minus className="h-4 w-4" />
-              </Button>
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button variant="outline" size="icon" onClick={() => setQuantity(Math.max(1, quantity - 1))}>
+                  <Minus className="h-4 w-4" />
+                </Button>
+              </motion.div>
               <span className="w-12 text-center font-medium">{quantity}</span>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
+              <motion.div whileTap={{ scale: 0.9 }}>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </motion.div>
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <Button size="lg" className="flex-1" onClick={handleAddToCart} disabled={product.stock === 0}>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Button size="lg" className="w-full" onClick={handleAddToCart} disabled={product.stock === 0}>
               {isAdded ? (
                 <>
                   <Check className="h-5 w-5 mr-2" />
@@ -126,7 +146,7 @@ export default function ProductDetailPage() {
                 </>
               )}
             </Button>
-          </div>
+          </motion.div>
 
           <Card>
             <CardContent className="p-4 space-y-3">
@@ -148,8 +168,8 @@ export default function ProductDetailPage() {
             <h3 className="font-semibold mb-2">Description</h3>
             <p className="text-muted-foreground">{product.description || 'No description available'}</p>
           </div>
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

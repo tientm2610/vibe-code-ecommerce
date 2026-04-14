@@ -7,7 +7,7 @@ export interface OrderWithItems extends Order {
       id: string;
       name: string;
       sku: string;
-      image_url: string | null;
+      imageUrl: string | null;
     };
   })[];
 }
@@ -16,7 +16,7 @@ export interface OrderWithItemsAndUser extends OrderWithItems {
   user: {
     id: string;
     email: string;
-    full_name: string | null;
+    fullName: string | null;
   };
 }
 
@@ -28,45 +28,45 @@ export class OrderRepository {
   async findByUserId(userId: string, page = 1, limit = 20): Promise<{ orders: Order[]; total: number }> {
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
-        where: { user_id: userId },
-        orderBy: { created_at: 'desc' },
+        where: { userId: userId },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit
       }),
-      prisma.order.count({ where: { user_id: userId } })
+      prisma.order.count({ where: { userId: userId } })
     ]);
     return { orders, total };
   }
 
   async findByOrderNumber(orderNumber: string): Promise<Order | null> {
-    return prisma.order.findUnique({ where: { order_number: orderNumber } });
+    return prisma.order.findUnique({ where: { orderNumber } });
   }
 
   async create(data: {
-    order_number: string;
-    user_id: string;
+    orderNumber: string;
+    userId: string;
     status: OrderStatus;
-    total_amount: number;
-    shipping_address: string;
-    billing_address: string;
+    totalAmount: number;
+    shippingAddress: string;
+    billingAddress: string;
     notes?: string;
-    items: { product_id: string; quantity: number; unit_price: number }[];
+    items: { productId: string; quantity: number; unitPrice: number }[];
   }): Promise<Order> {
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
         data: {
-          order_number: data.order_number,
-          user_id: data.user_id,
+          orderNumber: data.orderNumber,
+          userId: data.userId,
           status: data.status,
-          total_amount: data.total_amount,
-          shipping_address: data.shipping_address,
-          billing_address: data.billing_address,
+          totalAmount: data.totalAmount,
+          shippingAddress: data.shippingAddress,
+          billingAddress: data.billingAddress,
           notes: data.notes,
           items: {
             create: data.items.map(item => ({
-              product_id: item.product_id,
+              productId: item.productId,
               quantity: item.quantity,
-              unit_price: item.unit_price
+              unitPrice: item.unitPrice
             }))
           }
         }
@@ -74,7 +74,7 @@ export class OrderRepository {
 
       for (const item of data.items) {
         await tx.product.update({
-          where: { id: item.product_id },
+          where: { id: item.productId },
           data: { stock: { decrement: item.quantity } }
         });
       }
@@ -102,7 +102,7 @@ export class OrderRepository {
       where: { id },
       include: {
         items: { include: { product: true } },
-        user: { select: { id: true, email: true, full_name: true } }
+        user: { select: { id: true, email: true, fullName: true } }
       }
     }) as Promise<OrderWithItemsAndUser | null>;
   }
@@ -112,12 +112,12 @@ export class OrderRepository {
     const [orders, total] = await Promise.all([
       prisma.order.findMany({
         where,
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
         skip: (page - 1) * limit,
         take: limit,
         include: {
           items: { include: { product: true } },
-          user: { select: { id: true, email: true, full_name: true } }
+          user: { select: { id: true, email: true, fullName: true } }
         }
       }),
       prisma.order.count({ where })

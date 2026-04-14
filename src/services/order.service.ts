@@ -56,17 +56,17 @@ export class OrderService {
     );
 
     const order = await orderRepository.create({
-      order_number: orderNumber,
-      user_id: userId,
+      orderNumber: orderNumber,
+      userId: userId,
       status: OrderStatus.PENDING,
-      total_amount: totalAmount,
-      shipping_address: dto.shippingAddress,
-      billing_address: dto.billingAddress,
+      totalAmount: totalAmount,
+      shippingAddress: dto.shippingAddress,
+      billingAddress: dto.billingAddress,
       notes: dto.notes,
       items: cart.items.map(item => ({
-        product_id: item.product_id,
+        productId: item.productId,
         quantity: item.quantity,
-        unit_price: Number(item.product.price)
+        unitPrice: Number(item.product.price)
       }))
     });
 
@@ -90,7 +90,7 @@ export class OrderService {
     if (!order) {
       throw new AppError('Order not found', 404, 'ORDER_NOT_FOUND');
     }
-    if (order.user_id !== userId) {
+    if (order.userId !== userId) {
       throw new AppError('Access denied', 403, 'ACCESS_DENIED');
     }
     return this.formatOrderResponse(orderId);
@@ -101,7 +101,7 @@ export class OrderService {
     if (!order) {
       throw new AppError('Order not found', 404, 'ORDER_NOT_FOUND');
     }
-    if (order.user_id !== userId) {
+    if (order.userId !== userId) {
       throw new AppError('Access denied', 403, 'ACCESS_DENIED');
     }
     if (order.status !== OrderStatus.PENDING && order.status !== OrderStatus.PROCESSING) {
@@ -118,25 +118,25 @@ export class OrderService {
 
     const items: OrderItemResponse[] = (order.items || []).map((item: any) => ({
       id: item.id,
-      productId: item.product_id,
+      productId: item.productId,
       productName: item.product.name,
       productSku: item.product.sku,
-      productImageUrl: item.product.image_url,
+      productImageUrl: item.product.imageUrl,
       quantity: item.quantity,
-      unitPrice: Number(item.unit_price),
-      subtotal: Number(item.unit_price) * item.quantity
+      unitPrice: Number(item.unitPrice),
+      subtotal: Number(item.unitPrice) * item.quantity
     }));
 
     return {
       id: order.id,
-      orderNumber: order.order_number,
+      orderNumber: order.orderNumber,
       status: order.status,
-      totalAmount: Number(order.total_amount),
-      shippingAddress: order.shipping_address,
-      billingAddress: order.billing_address,
+      totalAmount: Number(order.totalAmount),
+      shippingAddress: order.shippingAddress,
+      billingAddress: order.billingAddress,
       notes: order.notes,
       items,
-      createdAt: order.created_at
+      createdAt: order.createdAt
     };
   }
 

@@ -1,6 +1,7 @@
 'use client';
 
 import { ProductCard } from './product-card';
+import { EmptyState } from '@/components/ui/empty-state';
 
 interface Product {
   id: string;
@@ -9,18 +10,27 @@ interface Product {
   price: number;
   imageUrl: string | null;
   sku: string;
+  originalPrice?: number;
+  badge?: 'sale' | 'new' | 'hot';
+  stock?: number;
 }
 
 interface ProductGridProps {
   products: Product[];
+  loading?: boolean;
+  onBrowse?: () => void;
 }
 
-export function ProductGrid({ products }: ProductGridProps) {
-  if (products.length === 0) {
+export function ProductGrid({ products, loading, onBrowse }: ProductGridProps) {
+  if (!loading && products.length === 0) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">No products found</p>
-      </div>
+      <EmptyState
+        type="products"
+        title="No products found"
+        description="We couldn't find any products matching your criteria."
+        actionLabel="Clear filters"
+        onAction={onBrowse}
+      />
     );
   }
 
@@ -35,6 +45,9 @@ export function ProductGrid({ products }: ProductGridProps) {
           price={product.price}
           imageUrl={product.imageUrl}
           sku={product.sku}
+          originalPrice={product.originalPrice}
+          badge={product.badge}
+          stock={product.stock}
         />
       ))}
     </div>

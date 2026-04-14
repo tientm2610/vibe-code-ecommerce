@@ -45,8 +45,8 @@ export class AuthService {
     const passwordHash = await bcrypt.hash(dto.password, BCRYPT_ROUNDS);
     const user = await userRepository.create({
       email: dto.email,
-      password_hash: passwordHash,
-      full_name: dto.fullName,
+      passwordHash: passwordHash,
+      fullName: dto.fullName,
       role: UserRole.USER
     });
 
@@ -60,11 +60,11 @@ export class AuthService {
       throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
     }
 
-    if (!user.is_active) {
+    if (!user.isActive) {
       throw new AppError('Account is deactivated', 403, 'ACCOUNT_DEACTIVATED');
     }
 
-    const isValidPassword = await bcrypt.compare(dto.password, user.password_hash);
+    const isValidPassword = await bcrypt.compare(dto.password, user.passwordHash);
     if (!isValidPassword) {
       throw new AppError('Invalid credentials', 401, 'INVALID_CREDENTIALS');
     }
@@ -77,7 +77,7 @@ export class AuthService {
     try {
       const decoded = jwt.verify(refreshToken, JWT_REFRESH_SECRET) as { user: UserResponse };
       const user = await userRepository.findById(decoded.user.id);
-      if (!user || !user.is_active) {
+      if (!user || !user.isActive) {
         throw new AppError('Invalid token', 401, 'INVALID_TOKEN');
       }
       const tokens = this.generateTokens(this.formatUserResponse(user));
@@ -91,7 +91,7 @@ export class AuthService {
     try {
       const decoded = jwt.verify(token, JWT_SECRET) as { user: UserResponse };
       const user = await userRepository.findById(decoded.user.id);
-      if (!user || !user.is_active) {
+      if (!user || !user.isActive) {
         throw new AppError('User not found', 401, 'USER_NOT_FOUND');
       }
       return this.formatUserResponse(user);
@@ -106,8 +106,8 @@ export class AuthService {
     return { accessToken, refreshToken };
   }
 
-  private formatUserResponse(user: { id: string; email: string; full_name: string | null; role: UserRole }): UserResponse {
-    return { id: user.id, email: user.email, fullName: user.full_name, role: user.role };
+  private formatUserResponse(user: { id: string; email: string; fullName: string | null; role: UserRole }): UserResponse {
+    return { id: user.id, email: user.email, fullName: user.fullName, role: user.role };
   }
 }
 

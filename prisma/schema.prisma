@@ -23,12 +23,12 @@ enum OrderStatus {
 model User {
   id            String      @id @default(uuid())
   email         String      @unique
-  password_hash String      @map("password_hash")
-  full_name     String?     @map("full_name")
+  passwordHash  String      @map("password_hash")
+  fullName     String?     @map("full_name")
   role          UserRole    @default(USER)
-  is_active     Boolean     @default(true) @map("is_active")
-  created_at    DateTime    @default(now()) @map("created_at")
-  updated_at    DateTime    @updatedAt @map("updated_at")
+  isActive     Boolean     @default(true) @map("is_active")
+  createdAt    DateTime    @default(now()) @map("created_at")
+  updatedAt    DateTime    @updatedAt @map("updated_at")
 
   carts         Cart[]
   orders        Order[]
@@ -41,111 +41,116 @@ model Category {
   id          String     @id @default(uuid())
   name        String     @unique
   description String?
-  parent_id   String?    @map("parent_id")
-  is_active   Boolean    @default(true) @map("is_active")
-  created_at  DateTime   @default(now()) @map("created_at")
-  updated_at  DateTime   @updatedAt @map("updated_at")
+  parentId    String?    @map("parent_id")
+  isActive    Boolean    @default(true) @map("is_active")
+  imageUrl    String?    @map("image_url")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
 
-  parent      Category?  @relation("CategoryHierarchy", fields: [parent_id], references: [id])
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryHierarchy")
   products    Product[]
 
   @@map("categories")
-  @@index([parent_id], name: "idx_categories_parent_id")
-  @@index([is_active], name: "idx_categories_is_active")
+  @@index([parentId], name: "idx_categories_parent_id")
+  @@index([isActive], name: "idx_categories_is_active")
 }
 
 model Product {
-  id          String    @id @default(uuid())
-  name        String
-  description String?
-  sku         String    @unique
-  price       Decimal   @db.Decimal(10, 2)
-  stock       Int       @default(0)
-  image_url   String?   @map("image_url")
-  is_active   Boolean   @default(true) @map("is_active")
-  created_at  DateTime  @default(now()) @map("created_at")
-  updated_at  DateTime  @updatedAt @map("updated_at")
+  id            String    @id @default(uuid())
+  name          String
+  description   String?
+  sku           String    @unique
+  price         Decimal   @db.Decimal(10, 2)
+  originalPrice Decimal?  @db.Decimal(10, 2) @map("original_price")
+  stock         Int       @default(0)
+  imageUrl      String?   @map("image_url")
+  badge         String?   // 'sale', 'new', 'hot'
+  isFeatured    Boolean   @default(false) @map("is_featured")
+  isActive      Boolean   @default(true) @map("is_active")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  category_id String    @map("category_id")
-  category    Category  @relation(fields: [category_id], references: [id])
+  categoryId    String    @map("category_id")
+  category      Category  @relation(fields: [categoryId], references: [id])
 
-  cart_items  CartItem[]
-  order_items OrderItem[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
 
   @@map("products")
-  @@index([category_id], name: "idx_products_category_id")
+  @@index([categoryId], name: "idx_products_category_id")
   @@index([sku], name: "uniq_products_sku")
-  @@index([is_active], name: "idx_products_is_active")
-  @@index([created_at], name: "idx_products_created_at")
+  @@index([isActive], name: "idx_products_is_active")
+  @@index([createdAt], name: "idx_products_created_at")
+  @@index([isFeatured], name: "idx_products_is_featured")
 }
 
 model Cart {
   id         String     @id @default(uuid())
-  user_id    String     @map("user_id")
-  is_active  Boolean    @default(true) @map("is_active")
-  created_at DateTime   @default(now()) @map("created_at")
-  updated_at DateTime   @updatedAt @map("updated_at")
+  userId     String     @map("user_id")
+  isActive   Boolean    @default(true) @map("is_active")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
-  user       User       @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   items      CartItem[]
 
   @@map("carts")
-  @@index([user_id], name: "idx_carts_user_id")
-  @@index([is_active], name: "idx_carts_is_active")
+  @@index([userId], name: "idx_carts_user_id")
+  @@index([isActive], name: "idx_carts_is_active")
 }
 
 model CartItem {
-  id        String   @id @default(uuid())
-  cart_id   String   @map("cart_id")
-  product_id String  @map("product_id")
-  quantity  Int
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+  id         String   @id @default(uuid())
+  cartId     String   @map("cart_id")
+  productId  String   @map("product_id")
+  quantity   Int
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
 
-  cart      Cart     @relation(fields: [cart_id], references: [id], onDelete: Cascade)
-  product   Product  @relation(fields: [product_id], references: [id])
+  cart       Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id])
 
   @@map("cart_items")
-  @@unique([cart_id, product_id], name: "uniq_cart_items_cart_product")
-  @@index([cart_id], name: "idx_cart_items_cart_id")
-  @@index([product_id], name: "idx_cart_items_product_id")
+  @@unique([cartId, productId], name: "uniq_cart_items_cart_product")
+  @@index([cartId], name: "idx_cart_items_cart_id")
+  @@index([productId], name: "idx_cart_items_product_id")
 }
 
 model Order {
-  id            String      @id @default(uuid())
-  order_number  String      @unique @map("order_number")
-  user_id       String      @map("user_id")
-  status        OrderStatus @default(PENDING)
-  total_amount  Decimal     @db.Decimal(10, 2) @map("total_amount")
-  shipping_address String   @map("shipping_address")
-  billing_address  String   @map("billing_address")
-  notes         String?
-  created_at    DateTime    @default(now()) @map("created_at")
-  updated_at    DateTime    @updatedAt @map("updated_at")
+  id             String      @id @default(uuid())
+  orderNumber     String      @unique @map("order_number")
+  userId         String      @map("user_id")
+  status         OrderStatus @default(PENDING)
+  totalAmount    Decimal     @db.Decimal(10, 2) @map("total_amount")
+  shippingAddress String   @map("shipping_address")
+  billingAddress  String   @map("billing_address")
+  notes          String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
 
-  user          User        @relation(fields: [user_id], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
   items         OrderItem[]
 
   @@map("orders")
-  @@index([user_id], name: "idx_orders_user_id")
-  @@index([order_number], name: "uniq_orders_order_number")
+  @@index([userId], name: "idx_orders_user_id")
+  @@index([orderNumber], name: "uniq_orders_order_number")
   @@index([status], name: "idx_orders_status")
-  @@index([created_at], name: "idx_orders_created_at")
+  @@index([createdAt], name: "idx_orders_created_at")
 }
 
 model OrderItem {
-  id            String  @id @default(uuid())
-  order_id      String  @map("order_id")
-  product_id    String  @map("product_id")
-  quantity      Int
-  unit_price    Decimal @db.Decimal(10, 2) @map("unit_price")
-  created_at    DateTime @default(now()) @map("created_at")
+  id          String  @id @default(uuid())
+  orderId     String  @map("order_id")
+  productId   String  @map("product_id")
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(10, 2) @map("unit_price")
+  createdAt   DateTime @default(now()) @map("created_at")
 
-  order         Order   @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  product       Product @relation(fields: [product_id], references: [id])
+  order       Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product    Product @relation(fields: [productId], references: [id])
 
   @@map("order_items")
-  @@index([order_id], name: "idx_order_items_order_id")
-  @@index([product_id], name: "idx_order_items_product_id")
+  @@index([orderId], name: "idx_order_items_order_id")
+  @@index([productId], name: "idx_order_items_product_id")
 }

@@ -1,4 +1,4 @@
-import { PrismaClient, Product } from '@prisma/client';
+import { PrismaClient, Product, Category } from '@prisma/client';
 import { prisma } from '../config/prisma';
 
 export class ProductRepository {
@@ -12,8 +12,8 @@ export class ProductRepository {
 
   async findAll(page = 1, limit = 20, filters?: { categoryId?: string; isActive?: boolean; search?: string }) {
     const where: any = {};
-    if (filters?.categoryId) where.category_id = filters.categoryId;
-    if (filters?.isActive !== undefined) where.is_active = filters.isActive;
+    if (filters?.categoryId) where.categoryId = filters.categoryId;
+    if (filters?.isActive !== undefined) where.isActive = filters.isActive;
     if (filters?.search) {
       where.OR = [
         { name: { contains: filters.search, mode: 'insensitive' } },
@@ -27,7 +27,7 @@ export class ProductRepository {
         where,
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
         include: { category: { select: { id: true, name: true } } }
       }),
       prisma.product.count({ where })
@@ -35,11 +35,48 @@ export class ProductRepository {
     return { products, total };
   }
 
-  async create(data: { name: string; description?: string; sku: string; price: number; stock: number; image_url?: string; category_id: string }): Promise<Product> {
+  async findFeatured(limit = 4): Promise<Product[]> {
+    return prisma.product.findMany({
+      where: { isActive: true, isFeatured: true },
+      take: limit,
+      orderBy: { createdAt: 'desc' },
+      include: { category: { select: { id: true, name: true } } }
+    });
+  }
+
+  async findBestSellers(limit = 4): Promise<Product[]> {
+    const productIdsWithOrders = await prisma.orderItem.groupBy({
+      by: ['productId'],
+      _count: { quantity: true },
+      orderBy: { _count: { quantity: 'desc' } },
+      take: limit * 2
+    });
+
+    const topProductIds = productIdsWithOrders.map(p => p.productId);
+    
+    if (topProductIds.length === 0) {
+      return prisma.product.findMany({
+        where: { isActive: true },
+        take: limit,
+        orderBy: { createdAt: 'desc' },
+        include: { category: { select: { id: true, name: true } } }
+      });
+    }
+
+    const products = await prisma.product.findMany({
+      where: { id: { in: topProductIds }, isActive: true },
+      include: { category: { select: { id: true, name: true } } }
+    });
+
+    const productMap = new Map(products.map(p => [p.id, p]));
+    return topProductIds.map(id => productMap.get(id)!).filter(Boolean).slice(0, limit);
+  }
+
+  async create(data: { name: string; description?: string; sku: string; price: number; stock: number; imageUrl?: string; categoryId: string }): Promise<Product> {
     return prisma.product.create({ data });
   }
 
-  async update(id: string, data: { name?: string; description?: string; sku?: string; price?: number; stock?: number; image_url?: string; category_id?: string; is_active?: boolean }): Promise<Product> {
+  async update(id: string, data: { name?: string; description?: string; sku?: string; price?: number; stock?: number; imageUrl?: string; categoryId?: string; isActive?: boolean; isFeatured?: boolean; originalPrice?: number; badge?: string }): Promise<Product> {
     return prisma.product.update({ where: { id }, data });
   }
 

@@ -15,7 +15,7 @@ export class CategoryRepository {
       prisma.category.findMany({
         skip: (page - 1) * limit,
         take: limit,
-        orderBy: { created_at: 'desc' },
+        orderBy: { createdAt: 'desc' },
         include: { parent: { select: { id: true, name: true } } }
       }),
       prisma.category.count()
@@ -23,11 +23,19 @@ export class CategoryRepository {
     return { categories, total };
   }
 
-  async create(data: { name: string; description?: string; parent_id?: string }): Promise<Category> {
+  async findHomepage(limit = 6): Promise<Category[]> {
+    return prisma.category.findMany({
+      where: { isActive: true },
+      take: limit,
+      orderBy: { name: 'asc' }
+    });
+  }
+
+  async create(data: { name: string; description?: string; parentId?: string }): Promise<Category> {
     return prisma.category.create({ data });
   }
 
-  async update(id: string, data: { name?: string; description?: string; parent_id?: string; is_active?: boolean }): Promise<Category> {
+  async update(id: string, data: { name?: string; description?: string; parentId?: string; isActive?: boolean; imageUrl?: string }): Promise<Category> {
     return prisma.category.update({ where: { id }, data });
   }
 

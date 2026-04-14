@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, ShoppingCart, Users, FolderTree, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, FolderTree, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuthStore } from '@/lib/auth-store';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const adminNavItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
