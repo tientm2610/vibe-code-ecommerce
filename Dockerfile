@@ -1,15 +1,14 @@
-FROM node:20-alpine
+FROM node:20-bookworm
 
 WORKDIR /app
 
-COPY package*.json ./
+RUN apt-get update && apt-get install -y openssl
 
-RUN npm ci
+COPY package*.json ./
+RUN npm install
 
 COPY . .
 
 RUN npx prisma generate
 
-EXPOSE 3000 3001
-
-CMD npm run dev & npm run server
+EXPOSE 3000 4000

@@ -1,26 +1,35 @@
-version: '3.8'
-
 services:
-  app:
+  frontend:
     build: .
     ports:
       - "3000:3000"
-      - "3001:3001"
     environment:
-      - DATABASE_URL=mysql://root:password@mysql:3306/myapp
+      - NEXT_PUBLIC_API_URL=http://localhost:4000/api/v1
+    volumes:
+      - .:/app
+      - /app/node_modules
+    command: npm run dev
+
+  backend:
+    build: .
+    ports:
+      - "4000:3001"
+    environment:
+      - DATABASE_URL=mysql://root:password@mysql:3306/ecommerce_db
     depends_on:
       - mysql
     volumes:
       - .:/app
       - /app/node_modules
+    command: npm run server
 
   mysql:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "3307:3306"
     environment:
       - MYSQL_ROOT_PASSWORD=password
-      - MYSQL_DATABASE=myapp
+      - MYSQL_DATABASE=ecommerce_db
     volumes:
       - mysql_data:/var/lib/mysql
 

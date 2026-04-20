@@ -1,4 +1,4 @@
-// File: C:\Project\vibe-code\template-ecommerce\skill-ai-agent\app\(user)\layout.tsx
+// File: /app/app/(user)/layout.tsx
 import * as entry from '../../../../app/(user)/layout.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

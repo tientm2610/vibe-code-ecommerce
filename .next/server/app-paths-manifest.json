@@ -1,7 +1,4 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
-  "/(user)/products/page": "app/(user)/products/page.js",
-  "/(user)/page": "app/(user)/page.js",
-  "/(user)/products/[id]/page": "app/(user)/products/[id]/page.js",
-  "/(user)/cart/page": "app/(user)/cart/page.js"
+  "/(user)/products/page": "app/(user)/products/page.js"
 }
